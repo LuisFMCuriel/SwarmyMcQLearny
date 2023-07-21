@@ -7,6 +7,7 @@ from strategies import GreedyStrategy
 from replayBuffer import ReplayBuffer
 import PIL
 import time
+import gym
 
 
 class DDQN:
