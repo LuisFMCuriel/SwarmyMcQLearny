@@ -43,23 +43,38 @@ class DDQN:
         batch_size = len(is_terminals)
 
         with tf.GradientTape() as tape:
-          # We get the argmax (or maximum action index using the online network)
-          argmax_a_q_sp = tf.argmax(self.online_model(next_states), axis=1)
-          # Then we use the target model to calculate the estimated Q-values
-          q_sp = tf.stop_gradient(self.target_model(next_states))
-          # And extract the max value using the index gotten with the online model
-          max_a_q_sp = tf.expand_dims(tf.gather(q_sp, argmax_a_q_sp, axis=1), axis=1)
 
-          # Then we start computing the loss value
-          target_q_sa = rewards + (self.gamma * max_a_q_sp * (1 - is_terminals))
-          q_sa = tf.gather(self.online_model(states), actions, axis=1)
+            # We get the argmax (or maximum action index using the online network)
+            #argmax_a_q_sp = tf.argmax(self.online_model(next_states), axis=1)
+            argmax_a_q_sp = np.argmax(self.online_model(next_states), axis=1)
+            # Then we use the target model to calculate the estimated Q-values
+            q_sp = tf.stop_gradient(self.target_model(next_states))
 
-          td_error = q_sa - target_q_sa
-          value_loss = tf.reduce_mean(tf.square(td_error) * 0.5)
+            # And extract the max value using the index gotten with the online model
+            #max_a_q_sp = tf.expand_dims(tf.gather(q_sp, argmax_a_q_sp, axis=1), axis=1)
+            max_a_q_sp = tf.expand_dims(tf.gather(q_sp, argmax_a_q_sp, axis = 1)[:,0], axis = 1)
+            # Then we start computing the loss value
+            target_q_sa = rewards + (self.gamma * max_a_q_sp * (1 - is_terminals))
+
+            # Flatten the column_indices tensor
+            actions_ = tf.reshape(actions, [-1])
+
+            # Use tf.range to create row indices
+            row_indices = tf.range(actions_.shape[0])
+            row_indices = tf.cast(row_indices, tf.int64)
+            # Create combined indices
+            combined_indices = tf.stack([row_indices, actions_], axis=1)
+
+            # Gather elements from the second tensor using combined indices
+            q_sa = tf.gather_nd(self.online_model(states), combined_indices)
+            q_sa = tf.reshape(q_sa, (-1, 1))
+
+            #q_sa = tf.gather(self.online_model(states), actions, axis=1)
+            td_error = q_sa - target_q_sa
+            value_loss = tf.reduce_mean(tf.square(td_error) * 0.5)
         variables = self.online_model.trainable_variables
         gradients = tape.gradient(value_loss, variables)
-        #clipped_gradients, _ = tf.clip_by_global_norm(gradients, max_gradient_norm)
-        #self.value_optimizer.apply_gradients(zip(clipped_gradients, variables))
+
         self.value_optimizer.apply_gradients(zip(gradients, self.online_model.trainable_variables))
 
     def evaluate(self, eval_policy_model, eval_env, n_episodes=1):
