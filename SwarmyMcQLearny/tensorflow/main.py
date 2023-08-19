@@ -2,7 +2,7 @@ from strategies import EGreedyExpStrategy, GreedyStrategy
 from algorithms import DDQN
 
 
-my_DDQN = DDQN(gamma = 1,
+my_DDQN = DDQN(gamma = 0.99,
                env_name = 'CartPole-v1',
                update_target_every_n_steps = 4,
                training_strategy_fn = EGreedyExpStrategy(),

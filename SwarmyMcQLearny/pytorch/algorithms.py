@@ -1,5 +1,5 @@
-import tensorflow as tf
 from itertools import count
+import torch
 from models import FCQ
 import numpy as np
 from IPython.display import display, Image
@@ -8,6 +8,7 @@ from replayBuffer import ReplayBuffer
 import PIL
 import time
 import gym
+import torch.optim as optim
 
 
 class DDQN:
@@ -32,50 +33,40 @@ class DDQN:
 
 
     def update_network(self, tau):
-        for target, online in zip(self.target_model.trainable_variables, self.online_model.trainable_variables):
-            target.assign(tau*online + (1.0 - tau)*target)
+        for target, online in zip(self.target_model.parameters(), self.online_model.parameters()):
+            target.data.copy_(tau*online.data + (1.0 - tau)*target.data)
 
 
     def optimize_model(self,
                        experiences,
                        max_gradient_norm = float('inf')):
+        global q_sp
+        global max_a_q_sp
+        global argmax_a_q_sp
+        global target_q_sa
+        global q_sa
+        global states
+        global actions
+
         states, actions, rewards, next_states, is_terminals = experiences
         batch_size = len(is_terminals)
+        # We get the argmax (or maximum action index using the online network)
+        argmax_a_q_sp = self.online_model(next_states).max(1)[1]
+        # Then we use the target model to calculate the estimated Q-values
+        q_sp = self.target_model(next_states).detach()
+        # And extract the max value using the index gotten with the online model
+        max_a_q_sp = q_sp[np.arange(batch_size), argmax_a_q_sp].unsqueeze(1)
 
-        with tf.GradientTape() as tape:
+        # Then we start computing the loss value
+        target_q_sa = rewards + (self.gamma * max_a_q_sp * (1 - is_terminals))
+        q_sa = self.online_model(states).gather(1, actions)
 
-            # We get the argmax (or maximum action index using the online network)
-            #argmax_a_q_sp = tf.argmax(self.online_model(next_states), axis=1)
-            argmax_a_q_sp = np.argmax(self.online_model(next_states), axis=1)
-            # Then we use the target model to calculate the estimated Q-values
-            q_sp = tf.stop_gradient(self.target_model(next_states))
-
-            # And extract the max value using the index gotten with the online model
-            #max_a_q_sp = tf.expand_dims(tf.gather(q_sp, argmax_a_q_sp, axis=1), axis=1)
-            max_a_q_sp = tf.expand_dims(tf.gather(q_sp, argmax_a_q_sp, axis = 1)[:,0], axis = 1)
-            # Then we start computing the loss value
-            target_q_sa = rewards + (self.gamma * max_a_q_sp * (1 - is_terminals))
-
-            # Flatten the column_indices tensor
-            actions_ = tf.reshape(actions, [-1])
-
-            # Use tf.range to create row indices
-            row_indices = tf.range(actions_.shape[0])
-            row_indices = tf.cast(row_indices, tf.int64)
-            # Create combined indices
-            combined_indices = tf.stack([row_indices, actions_], axis=1)
-
-            # Gather elements from the second tensor using combined indices
-            q_sa = tf.gather_nd(self.online_model(states), combined_indices)
-            q_sa = tf.reshape(q_sa, (-1, 1))
-
-            #q_sa = tf.gather(self.online_model(states), actions, axis=1)
-            td_error = q_sa - target_q_sa
-            value_loss = tf.reduce_mean(tf.square(td_error) * 0.5)
-        variables = self.online_model.trainable_variables
-        gradients = tape.gradient(value_loss, variables)
-
-        self.value_optimizer.apply_gradients(zip(gradients, self.online_model.trainable_variables))
+        td_error = q_sa - target_q_sa
+        value_loss = td_error.pow(2).mul(0.5).mean()
+        self.value_optimizer.zero_grad()
+        value_loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.online_model.parameters(), max_gradient_norm)
+        self.value_optimizer.step()
 
     def evaluate(self, eval_policy_model, eval_env, n_episodes=1):
         rs = []
@@ -108,7 +99,7 @@ class DDQN:
         self.best_model = FCQ(nS, nA, hidden_dims=hidden_dims)
         best_score = 0
         self.update_network(tau = tau)
-        self.value_optimizer = tf.keras.optimizers.RMSprop(learning_rate=self.lr)
+        self.value_optimizer = optim.RMSprop(self.online_model.parameters(), lr = self.lr)
         min_samples = batch_size*n_warmup_batches
 
 
