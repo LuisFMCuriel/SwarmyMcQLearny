@@ -52,9 +52,36 @@ the user is more familiar with one of the frameworks.
 │   ├── test_inference_helpers.py             
 ```
 
-## Getting started
-Use the yaml files deposited in SwarmyMcQLearny/environments/ with anaconda to download the python packages needed to run the models. 
-Run the next command in a terminal or an Anaconda prompt to create the environment from the yml file.
+# Getting Started
 
-`conda env create -f environment.yml`
+This guide will walk you through the steps to create a Conda environment named "SwarmyMcQLearny" and install the required packages for your project. Depending on your machine's configuration and your deep learning framework choice (TensorFlow or PyTorch), you'll find instructions below.
+
+## Prerequisites
+
+Before you begin, make sure you have Conda installed. If not, you can download and install it from [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html).
+
+## Create the Conda Environment
+
+Open your terminal and run the following command to create a new Conda environment named "SwarmyMcQLearny":
+
+```bash
+conda create --name SwarmyMcQLearny python=3.8
+```
+Activate the newly created environment using the following command:
+
+```bash
+conda activate SwarmyMcQLearny
+```
+Next, you can install the project requirements using Conda. If you plan to use TensorFlow, use the following command:
+
+```bash
+conda install -c anaconda tensorflow-gpu
+```
+
+If you prefer PyTorch, run this command:
+
+```bash
+conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+```
+Please note that the PyTorch installation command may change over time, and it's essential to check the official PyTorch website for the most up-to-date instructions. Visit [here](https://pytorch.org/get-started/locally/) to verify the installation command for your specific CUDA version.
 
