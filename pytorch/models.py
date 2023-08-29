@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
-class pytorch_FCQ(nn.Module):
+class FCQ(nn.Module):
     def __init__(self,
                  input_dim,
                  output_dim,
                  hidden_dims=(32,32),
                  activation_fc=F.relu):
-        super(pytorch_FCQ, self).__init__()
+        super(FCQ, self).__init__()
         self.activation_fc = activation_fc
 
         self.input_layer = nn.Linear(input_dim, hidden_dims[0])
