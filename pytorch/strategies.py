@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-class pytorch_EGreedyExpStrategy():
+class EGreedyExpStrategy():
     def __init__(self, init_epsilon=1.0, min_epsilon=0.1, decay_steps=20000):
         self.epsilon = init_epsilon
         self.init_epsilon = init_epsilon
@@ -34,7 +34,7 @@ class pytorch_EGreedyExpStrategy():
 
 
 # In this strategy we always want to be greedy since we are evaluating the network
-class pytorch_GreedyStrategy():
+class GreedyStrategy():
     def __init__(self):
         self.exploratory_action_taken = False
 

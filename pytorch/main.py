@@ -12,5 +12,5 @@ my_DDQN = DDQN(gamma = 1,
                replay_buffer_batch_size = 64
                )
 
-_, _ = my_DDQN.train(max_episodes = 1000)
+_, _ = my_DDQN.train(max_episodes = 10)
 my_DDQN.display_gif(filename = r"./media/CartPole-v1_pytorch.gif")
