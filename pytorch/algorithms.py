@@ -205,7 +205,7 @@ class DDQN:
             import imageio
             frame_duration = 1000 // 30  # Calculate duration in milliseconds
             # Use the duration argument instead of fps
-            imageio.mimsave(self.env_name, frames, duration=frame_duration)
+            imageio.mimsave(self.env_name + ".gif", frames, duration=frame_duration)
             #imageio.mimsave(self.env_name, frames, fps=30)
 
     def display_gif(self, filename: str = ".", episodes: int = 5, max_steps: int = 500):
