@@ -207,9 +207,15 @@ class DDQN:
         env.close()
 
         # Save frames as a GIF using imageio
-        PIL_frames = [PIL.Image.fromarray(frame) for frame in frames]
-        PIL_frames[0].save(self.env_name + ".gif", format='GIF', append_images=PIL_frames[1:], save_all=True, duration=1000/30, loop=0)
-        #imageio.mimsave(self.env_name, frames, fps=30)
+        try:
+            PIL_frames = [PIL.Image.fromarray(frame) for frame in frames]
+            PIL_frames[0].save(self.env_name + ".gif", format='GIF', append_images=PIL_frames[1:], save_all=True, duration=1000/30, loop=0)
+        except:
+            import imageio
+            frame_duration = 1000 // 30  # Calculate duration in milliseconds
+            # Use the duration argument instead of fps
+            imageio.mimsave(self.env_name + ".gif", frames, duration=frame_duration)
+            #imageio.mimsave(self.env_name, frames, fps=30)
 
     def display_gif(self, filename: str = ".", episodes: int = 5, max_steps: int = 500):
         self.create_gif(episodes, max_steps)
