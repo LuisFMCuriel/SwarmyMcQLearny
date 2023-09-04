@@ -106,6 +106,7 @@ class DDQN:
         #max_gradient_norm = float('inf') # For backpropagation
         n_network_updates = 0
         # Lists to store training details
+        times_optimization = []
         episode_reward = []
         episode_seconds = []
         episode_timestep = []
@@ -152,7 +153,7 @@ class DDQN:
                     self.optimize_model(experiences)
                     end_time = time.time()
                     elapsed_time = end_time - start_time
-                    print(elapsed_time)
+                    times_optimization.append(elapsed_time)
 
                 # Check if the game is over
                 if is_terminal:
@@ -179,6 +180,14 @@ class DDQN:
             if mean_100_eval_score >= goal_mean:
                 print("Reached goal -> training complete")
                 break
+        # Write the optimization timing logs
+        average_timing = np.mean(times_optimization)
+        log_description = "This is the average timing optimization of the event -> {}".format(average_timing)
+        with open("Optimization_pytorch_timing_logs.txt", "w") as log_file:
+            log_file.write(log_description + "\n")
+            for timing in times_optimization:
+                log_file.write(str(timing) + "\n")
+
         return episodes_arr, mean_100_eval_score_arr
 
     def create_gif(self, episodes=5, max_steps=500):
