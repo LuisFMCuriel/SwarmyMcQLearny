@@ -18,7 +18,13 @@ the user is more familiar with one of the frameworks.
 ├── requirements.txt   <- The requirements file for reproducing the environment, e.g.
 │                         generated with `pip freeze > requirements.txt`
 │
-├── setup.py           <- Make this project pip installable
+├── setup.py           <- Make this project pip installable (TODO)
+│
+├── media.py           <- Contains media for the repository
+│
+├── notebooks.py           <- Contains media for the repository
+│	├── SwarmyMcQLearny.ipynb	<- notebook to try on colab
+│
 ├── tensorflow         <- Source code for use in this project with tensorflow framework
 │   ├── __init__.py				<- Makes it a Python module
 │   │
@@ -46,7 +52,7 @@ the user is more familiar with one of the frameworks.
 │   │
 │   ├── strategies.py           <- Code to generate actions for the agents
 │   │
-├── tests          <- Scripts to test your code
+├── tests          <- Scripts to test your code (TODO)
 │   ├── __init__.py   
 │   ├── test_io_helpers.py   
 │   ├── test_pipeline_helpers.py
@@ -54,7 +60,7 @@ the user is more familiar with one of the frameworks.
 │   ├── test_inference_helpers.py             
 ```
 # Try me on colab
-to explore and experiment with our SwarmyMcQLearny project in the interactive and user-friendly environment of Google Colab. Just click here
+To explore and experiment with our SwarmyMcQLearny project in the interactive and user-friendly environment of Google Colab. Just click here
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LuisFMCuriel/SwarmyMcQLearny/blob/main/notebooks/SwarmyMcQLearny.ipynb)
 
 # Getting Started Locally
