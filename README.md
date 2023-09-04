@@ -8,6 +8,7 @@ The algorithms are implemented in PyTorch and tensorflow.
 The reason why we use both frameworks is to facilitate the use of the algorithms for the user in case
 the user is more familiar with one of the frameworks.
 
+![CartPole](https://github.com/LuisFMCuriel/SwarmyMcQLearny/blob/main/media/CartPole-v1.gif)
 ## Library Structure
 
 ```
