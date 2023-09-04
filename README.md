@@ -53,6 +53,7 @@ the user is more familiar with one of the frameworks.
 │   ├── test_inference_helpers.py             
 ```
 # Try me on colab
+to explore and experiment with our SwarmyMcQLearny project in the interactive and user-friendly environment of Google Colab. Just click here
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LuisFMCuriel/SwarmyMcQLearny/blob/main/notebooks/SwarmyMcQLearny.ipynb)
 
 # Getting Started Locally
