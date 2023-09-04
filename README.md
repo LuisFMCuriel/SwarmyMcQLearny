@@ -52,8 +52,10 @@ the user is more familiar with one of the frameworks.
 │   ├── test_training_helpers.py             
 │   ├── test_inference_helpers.py             
 ```
+# Try me on colab
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LuisFMCuriel/SwarmyMcQLearny/blob/main/notebooks/SwarmyMcQLearny.ipynb)
 
-# Getting Started
+# Getting Started Locally
 
 This guide will walk you through the steps to create a Conda environment named "SwarmyMcQLearny" and install the required packages for your project. Depending on your machine's configuration and your deep learning framework choice (TensorFlow or PyTorch), you'll find instructions below.
 
