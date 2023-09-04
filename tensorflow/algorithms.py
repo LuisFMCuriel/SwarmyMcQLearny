@@ -157,8 +157,11 @@ class DDQN:
                     experiences = self.replay_buffer.sample()
                     # Transform the experiences in tensors
                     experiences = self.online_model.load(experiences)
+                    start_time = time.time()
                     self.optimize_model(experiences)
-
+                    end_time = time.time()
+                    elapsed_time = end_time - start_time
+                    print(elapsed_time)
                 # Check if the game is over
                 if is_terminal:
                     break
