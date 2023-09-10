@@ -58,7 +58,7 @@ class DDQN:
         value_loss = td_error.pow(2).mul(0.5).mean()
         self.value_optimizer.zero_grad()
         value_loss.backward()
-        torch.nn.utils.clip_grad_norm_(self.online_model.parameters(), max_gradient_norm)
+        #torch.nn.utils.clip_grad_norm_(self.online_model.parameters(), max_gradient_norm)
         self.value_optimizer.step()
 
     def evaluate(self, eval_policy_model, eval_env, n_episodes=1):
