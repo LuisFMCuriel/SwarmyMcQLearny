@@ -40,13 +40,6 @@ class DDQN:
     def optimize_model(self,
                        experiences,
                        max_gradient_norm = float('inf')):
-        global q_sp
-        global max_a_q_sp
-        global argmax_a_q_sp
-        global target_q_sa
-        global q_sa
-        global states
-        global actions
 
         states, actions, rewards, next_states, is_terminals = experiences
         batch_size = len(is_terminals)
