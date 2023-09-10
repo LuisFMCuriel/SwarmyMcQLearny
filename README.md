@@ -96,3 +96,10 @@ conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvi
 ```
 Please note that the PyTorch installation command may change over time, and it's essential to check the official PyTorch website for the most up-to-date instructions. Visit [here](https://pytorch.org/get-started/locally/) to verify the installation command for your specific CUDA version.
 
+## Running the main script
+
+You can use the main.py script to explore different environments and paramters to tune the training
+```bash
+python main.py --gamma 0.9 --env_name 'CartPole-v1' --max_episodes 500
+```
+Note: For now only DDQN is implemented
