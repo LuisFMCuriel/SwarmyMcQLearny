@@ -11,6 +11,7 @@ def parse_arguments():
     parser.add_argument('--replay_buffer_size', type=int, default=100000, help='Replay buffer size')
     parser.add_argument('--replay_buffer_batch_size', type=int, default=64, help='Replay buffer batch size')
     parser.add_argument('--max_episodes', type=int, default=1000, help='Maximum number of episodes')
+    parser.add_argument('--hidden_dims', type=tuple, default=(512, 128), help='Network hidden dims')
     args = parser.parse_args()
     return args
 
@@ -28,5 +29,5 @@ if __name__ == "__main__":
         replay_buffer_batch_size=args.replay_buffer_batch_size
     )
 
-    _, _ = my_DDQN.train(max_episodes=args.max_episodes)
+    _, _ = my_DDQN.train(max_episodes=args.max_episodes, hidden_dims = (512, 128))
     my_DDQN.display_gif(filename=r"./media/CartPole-v1_pytorch.gif")
