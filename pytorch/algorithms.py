@@ -260,4 +260,12 @@ class DDPG():
         # Then we start computing the loss value
         target_q_sa = rewards + (self.gamma * max_a_q_sp * (1 - is_terminals))
         q_sa = self.online_value_model(states, actions)
+        td_error = q_sa - target_q_sa
+        value_loss = td_error.pow(2).mul(0.5).mean()
+        self.value_optimizer.zero_grad()
+        value_loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.online_value_model.parameters(), max_gradient_norm)
+        self.value_optimizer.step()
         
+        argmax_a_q_s = self.online_policy_model(states)
+        max_a_q_s = self.online_value_model(states, argmax_a_q_s)
