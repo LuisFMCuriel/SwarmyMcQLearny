@@ -246,4 +246,18 @@ class DDPG():
         # Update policy network
         for target, online in zip(self.target_policy_model.parameters(), self.online_policy_model.parameters()):
             target.data.copy_(tau*online.data + (1.0 - tau)*target.data)
- 
+    
+    def optimize_model(self,
+                       experiences,
+                       max_gradient_norm = float('inf')):
+        states, actions, rewards, next_states, is_terminals = experiences
+        batch_size = len(is_terminals)
+        
+        # We predict the argmax with the policy network
+        argmax_a_q_sp = self.target_policy_model(next_states)
+        # Then we use the target model to calculate the estimated Q-values using the value Q network
+        max_a_q_sp = self.target_value_model(next_states, argmax_a_q_sp)
+        # Then we start computing the loss value
+        target_q_sa = rewards + (self.gamma * max_a_q_sp * (1 - is_terminals))
+        q_sa = self.online_value_model(states, actions)
+        
