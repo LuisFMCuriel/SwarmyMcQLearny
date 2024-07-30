@@ -217,3 +217,33 @@ class DDQN:
     def display_gif(self, filename: str = ".", episodes: int = 5, max_steps: int = 500):
         self.create_gif(episodes, max_steps)
         display(Image(filename=r"/content/" + self.env_name + ".gif", format='png'))
+
+class DDPG():
+    def __init__(self,
+                 gamma: float,
+                 training_strategy_fn,
+                 evaluation_strategy_fn,
+                 policy_opt_lr: float = 0.0003,
+                 value_opt_lr: float = 0.0003,
+                 env_name: str = 'Pendulum-v1',
+                 update_target_every_n_steps: int = 4,
+                 replay_buffer_size = 100000,
+                 replay_buffer_batch_size = 64):
+        
+        self.gamma = gamma
+        self.env_name = env_name
+        self.update_target_every_n_steps = update_target_every_n_steps
+        self.training_strategy_fn = training_strategy_fn
+        self.evaluation_strategy_fn = evaluation_strategy_fn
+        self.policy_opt_lr = policy_opt_lr
+        self.value_opt_lr = value_opt_lr
+        self.replay_buffer = ReplayBuffer(max_size = replay_buffer_size, batch_size = replay_buffer_batch_size)
+        
+    def update_network(self, tau) -> None:
+        # Update value network
+        for target, online in zip(self.target_value_model.parameters(), self.online_value_model.parameters()):
+            target.data.copy_(tau*online.data + (1.0 - tau)*target.data)
+        # Update policy network
+        for target, online in zip(self.target_policy_model.parameters(), self.online_policy_model.parameters()):
+            target.data.copy_(tau*online.data + (1.0 - tau)*target.data)
+ 
