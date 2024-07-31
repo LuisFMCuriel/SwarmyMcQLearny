@@ -269,3 +269,9 @@ class DDPG():
         
         argmax_a_q_s = self.online_policy_model(states)
         max_a_q_s = self.online_value_model(states, argmax_a_q_s)
+        policy_loss = -max_a_q_s.mean()
+        self.policy_optimizer.zero_grad()
+        policy_loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.online_policy_model.parameters(), max_gradient_norm)
+        self.policy_optimizer.step()
+        
