@@ -1,3 +1,4 @@
+from argparse import Action
 from itertools import count
 import torch
 from models import FCQ
@@ -274,4 +275,28 @@ class DDPG():
         policy_loss.backward()
         torch.nn.utils.clip_grad_norm_(self.online_policy_model.parameters(), max_gradient_norm)
         self.policy_optimizer.step()
+    
+    def train(self,
+                   hidden_dims = (512, 128),
+                   batch_size = 64,
+                   n_warmup_batches = 5,
+                   goal_mean = 475,
+                   max_episodes = 1000,
+                   tau = 1):
         
+        env = gym.make(self.env_name)
+
+        nS, nA = env.observation_space.shape[0], env.action_space.shape[0]
+        action_bounds = env.action_space.low, env.action_space.high
+        
+        self.target_value_model = FCQV(nS, nA, hidden_dims=hidden_dims)
+        self.online_value_model = FCQV(nS, nA, hidden_dims=hidden_dims)
+        
+        self.target_policy_model = FCDP(nS, action_bounds, hidden_dims=hidden_dims)
+        self.online_policy_model = FCDP(nS, action_bounds, hidden_dims=hidden_dims)
+        
+        # Update the networks completely
+        self.update_network(tau = 1.0)
+        
+        self.value_optimizer = optim.RMSprop(self.online_value_model.parameters(), lr = self.value_opt_lr)
+        self.policy_optimizer = optim.RMSprop(self.online_policy_model.parameters(), lr = self.policy_opt_lr)
