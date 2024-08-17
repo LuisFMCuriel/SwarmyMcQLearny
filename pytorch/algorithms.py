@@ -363,3 +363,28 @@ class DDPG():
                 if np.sum(episode_timestep) % self.update_target_every_n_steps == 0:
                     self.update_network(tau = tau)
                     n_network_updates += 1
+
+            # Stats
+            evaluation_score, std_eval = self.evaluate(eval_policy_model = self.online_model, eval_env = env)
+            evaluation_scores.append(evaluation_score)
+            mean_100_eval_score = np.mean(evaluation_scores[-100:])
+
+            if evaluation_score > best_score:
+                self.best_model = self.online_model
+            elapsed_str = time.strftime("%H:%M:%S", time.gmtime(time.time() - training_start))
+            mean_reward_10_episodes = np.mean(episode_reward[-10:])
+            mean_reward_10_episodes_arr.append(mean_reward_10_episodes)
+            mean_100_eval_score_arr.append(mean_100_eval_score)
+            episodes_arr.append(episode)
+            message = "elapsed time: {}, episode: {}, episode timestep: {}, reward 10 episodes: {}, eval mean: {}".format(elapsed_str, episode + 1, timestep, mean_reward_10_episodes, mean_100_eval_score)
+            print(message)
+            if mean_100_eval_score >= goal_mean:
+                print("Reached goal -> training complete")
+                break
+        # Write the optimization timing logs
+        average_timing = np.mean(times_optimization)
+        log_description = "This is the average timing optimization of the event -> {}".format(average_timing)
+        with open("Optimization_pytorch_timing_logs.txt", "w") as log_file:
+            log_file.write(log_description + "\n")
+            for timing in times_optimization:
+                log_file.write(str(timing) + "\n")
