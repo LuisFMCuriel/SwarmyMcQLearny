@@ -45,7 +45,8 @@ if __name__ == "__main__":
             update_target_every_n_steps=args.update_target_every_n_steps,
             training_strategy_fn=NormalNoiseStrategy(bounds),
             evaluation_strategy_fn=GreedyStrategy(),
-            lr=args.lr,
+            policy_opt_lr=args.lr,
+            value_opt_lr=args.lr,
             replay_buffer_size=args.replay_buffer_size,
             replay_buffer_batch_size=args.replay_buffer_batch_size
         )
