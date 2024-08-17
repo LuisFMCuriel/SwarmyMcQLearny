@@ -334,7 +334,7 @@ class DDPG():
                 action = self.training_strategy_fn.select_action(self.online_policy_model, 
                                                                  state)
                 # Print the take action
-                print("Taking action: {}".format(action))
+                #print("Taking action: {}".format(action))
                 # Make the action and get the infor of the next state
                 new_state, reward, is_terminal, info = env.step(action)
                 # Update the data
