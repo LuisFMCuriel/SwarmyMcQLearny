@@ -280,7 +280,7 @@ class DDPG():
                    hidden_dims = (512, 128),
                    batch_size = 64,
                    n_warmup_batches = 5,
-                   goal_mean = 475,
+                   goal_mean = -150,
                    max_episodes = 1000,
                    tau = 1,
                    env_name = "Pendulum-v1"):
