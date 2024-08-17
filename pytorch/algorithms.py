@@ -332,6 +332,34 @@ class DDPG():
                                                                  state,
                                                                  len(self.replay_buffer < min_samples))
                 # Print the take action
-                print("Action taken: {}".format(action))
+                print("Taking action: {}".format(action))
                 # Make the action and get the infor of the next state
                 new_state, reward, is_terminal, info = env.step(action)
+                # Update the data
+                episode_reward[-1] += reward
+                episode_timestep[-1] += 1
+                # Check if we reach the maximum number of steps for the environment or if we lost the game
+                is_truncated = 'TimeLimit.truncated' in info and info['TimeLimit.truncated']
+                is_failure = is_terminal and not is_truncated
+                # Save the info for the replay buffer
+                experience = (state, action, reward, new_state, float(is_failure))
+                self.replay_buffer.store(experience)
+                state = new_state
+                if len(self.replay_buffer) > min_samples:
+                    # Load stored data
+                    experiences = self.replay_buffer.sample()
+                    # Transform the experiences in tensors
+                    experiences = self.online_model.load(experiences)
+                    start_time = time.time()
+                    self.optimize_model(experiences)
+                    end_time = time.time()
+                    elapsed_time = end_time - start_time
+                    times_optimization.append(elapsed_time)
+
+                # Check if the game is over
+                if is_terminal:
+                    break
+                # Copy the online weights into the target network
+                if np.sum(episode_timestep) % self.update_target_every_n_steps == 0:
+                    self.update_network(tau = tau)
+                    n_network_updates += 1
