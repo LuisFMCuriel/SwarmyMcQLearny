@@ -282,7 +282,8 @@ class DDPG():
                    n_warmup_batches = 5,
                    goal_mean = 475,
                    max_episodes = 1000,
-                   tau = 1):
+                   tau = 1,
+                   env_name = "Pendulum-v1"):
         
         env = gym.make(self.env_name)
 
@@ -303,6 +304,7 @@ class DDPG():
 
         min_samples = batch_size*n_warmup_batches
         n_network_updates = 0
+        best_score = 0
         times_optimization = []
         episode_reward = []
         episode_seconds = []
@@ -365,12 +367,12 @@ class DDPG():
                     n_network_updates += 1
 
             # Stats
-            evaluation_score, std_eval = self.evaluate(eval_policy_model = self.online_model, eval_env = env)
+            evaluation_score, std_eval = self.evaluate(eval_policy_model = self.online_policy_model, eval_env = env)
             evaluation_scores.append(evaluation_score)
             mean_100_eval_score = np.mean(evaluation_scores[-100:])
 
-            if evaluation_score > best_score:
-                self.best_model = self.online_model
+            #if evaluation_score > best_score:
+            #    self.best_model = self.online_model
             elapsed_str = time.strftime("%H:%M:%S", time.gmtime(time.time() - training_start))
             mean_reward_10_episodes = np.mean(episode_reward[-10:])
             mean_reward_10_episodes_arr.append(mean_reward_10_episodes)
@@ -388,3 +390,15 @@ class DDPG():
             log_file.write(log_description + "\n")
             for timing in times_optimization:
                 log_file.write(str(timing) + "\n")
+
+    def evaluate(self, eval_policy_model, eval_env, n_episodes=1):
+        rs = []
+        for _ in range(n_episodes):
+            state, done = eval_env.reset(), False
+            rs.append(0)
+            for _ in count():
+                a = self.evaluation_strategy.select_action(eval_policy_model, state)
+                state, reward, done, _ = eval_env.step(a)
+                rs[-1] += reward
+                if done: break
+        return np.mean(rs), np.std(rs)
