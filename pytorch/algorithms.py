@@ -349,7 +349,7 @@ class DDPG():
                     # Load stored data
                     experiences = self.replay_buffer.sample()
                     # Transform the experiences in tensors
-                    experiences = self.online_model.load(experiences)
+                    experiences = self.online_value_model.load(experiences)
                     start_time = time.time()
                     self.optimize_model(experiences)
                     end_time = time.time()
