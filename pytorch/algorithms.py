@@ -1,7 +1,7 @@
 from argparse import Action
 from itertools import count
 import torch
-from models import FCQ
+from models import FCQ, FCDP, FCQV
 import numpy as np
 from IPython.display import display, Image
 from strategies import GreedyStrategy
