@@ -300,3 +300,38 @@ class DDPG():
         
         self.value_optimizer = optim.RMSprop(self.online_value_model.parameters(), lr = self.value_opt_lr)
         self.policy_optimizer = optim.RMSprop(self.online_policy_model.parameters(), lr = self.policy_opt_lr)
+
+        min_samples = batch_size*n_warmup_batches
+        n_network_updates = 0
+        times_optimization = []
+        episode_reward = []
+        episode_seconds = []
+        episode_timestep = []
+        evaluation_scores = []
+        mean_reward_10_episodes_arr = []
+        episodes_arr = []
+        mean_100_eval_score_arr = []
+        # 7.- Start training
+        # Start the timer
+        training_start = time.time()
+        for episode in range(max_episodes + 1):
+            # Let's add some timing to see how the agent develops. For this specific environment, the more time the agent spends in the episode better (it kept the pole in the right position)
+            episode_start = time.time()
+            # Reset the environment
+            state = env.reset()
+
+            #state = state[0]
+            is_terminal = False
+
+            # Start storing data for the whole episode
+            episode_reward.append(0.0)
+            episode_timestep.append(0.0)
+            for timestep, step in enumerate(count()):
+                # First the agent selects an action (the online model)
+                action = self.training_strategy_fn.select_action(self.online_policy_model, 
+                                                                 state,
+                                                                 len(self.replay_buffer < min_samples))
+                # Print the take action
+                print("Action taken: {}".format(action))
+                # Make the action and get the infor of the next state
+                new_state, reward, is_terminal, info = env.step(action)
