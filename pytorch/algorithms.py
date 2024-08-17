@@ -398,7 +398,7 @@ class DDPG():
             state, done = eval_env.reset(), False
             rs.append(0)
             for _ in count():
-                a = self.evaluation_strategy.select_action(eval_policy_model, state)
+                a = self.evaluation_strategy_fn.select_action(eval_policy_model, state)
                 state, reward, done, _ = eval_env.step(a)
                 rs[-1] += reward
                 if done: break
