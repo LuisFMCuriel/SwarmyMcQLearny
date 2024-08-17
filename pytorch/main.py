@@ -1,6 +1,7 @@
 from strategies import EGreedyExpStrategy, GreedyStrategy, NormalNoiseStrategy
 from algorithms import DDQN, DDPG
 import argparse
+import gym
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Reinforcement Training Script')
@@ -35,17 +36,20 @@ if __name__ == "__main__":
         my_DDQN.display_gif(filename=r"./media/{}_pytorch.gif".format(args.env_name))
 
     elif args.algorithm == "DDPG":
+        env = gym.make(args.env_name)
+        bounds = env.action_space.low, env.action_space.high
 
         my_DDPG = DDPG(
             gamma=args.gamma,
             env_name=args.env_name,
             update_target_every_n_steps=args.update_target_every_n_steps,
-            training_strategy_fn=NormalNoiseStrategy(),
+            training_strategy_fn=NormalNoiseStrategy(bounds),
             evaluation_strategy_fn=GreedyStrategy(),
             lr=args.lr,
             replay_buffer_size=args.replay_buffer_size,
             replay_buffer_batch_size=args.replay_buffer_batch_size
         )
+        
 
         _, _ = my_DDPG.train(max_episodes=args.max_episodes, hidden_dims = (256, 256))
         my_DDPG.display_gif(filename=r"./media/{}_pytorch.gif".format(args.env_name))
