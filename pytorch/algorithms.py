@@ -289,13 +289,13 @@ class DDPG():
         env = gym.make(self.env_name)
 
         nS, nA = env.observation_space.shape[0], env.action_space.shape[0]
-        action_bounds = env.action_space.low, env.action_space.high
+        self.action_bounds = env.action_space.low, env.action_space.high
         
         self.target_value_model = FCQV(nS, nA, hidden_dims=hidden_dims)
         self.online_value_model = FCQV(nS, nA, hidden_dims=hidden_dims)
         
-        self.target_policy_model = FCDP(nS, action_bounds, hidden_dims=hidden_dims)
-        self.online_policy_model = FCDP(nS, action_bounds, hidden_dims=hidden_dims)
+        self.target_policy_model = FCDP(nS, self.action_bounds, hidden_dims=hidden_dims)
+        self.online_policy_model = FCDP(nS, self.action_bounds, hidden_dims=hidden_dims)
         
         # Update the networks completely
         self.update_network(tau = 1.0)
@@ -398,7 +398,10 @@ class DDPG():
             state, done = eval_env.reset(), False
             rs.append(0)
             for _ in count():
-                a = self.evaluation_strategy_fn.select_action(eval_policy_model, state)
+                a = self.evaluation_strategy_fn.select_action(eval_policy_model, 
+                                                              state, 
+                                                              clip_bounds = True,
+                                                              bounds = self.action_bounds)
                 state, reward, done, _ = eval_env.step(a)
                 rs[-1] += reward
                 if done: break
