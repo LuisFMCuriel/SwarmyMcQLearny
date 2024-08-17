@@ -38,7 +38,7 @@ class GreedyStrategy():
     def __init__(self):
         self.exploratory_action_taken = False
 
-    def select_action(self, model, state, clip_bounds: bool = True, bounds: list = (0.0,0.0)):
+    def select_action(self, model, state, clip_bounds: bool = False, bounds: list = (0.0,0.0)):
         with torch.no_grad():
             q_values = model(state).cpu().detach().data.numpy().squeeze()
         if clip_bounds:
