@@ -402,3 +402,38 @@ class DDPG():
                 rs[-1] += reward
                 if done: break
         return np.mean(rs), np.std(rs)
+    
+    def create_gif(self, episodes=5, max_steps=500):
+        env = gym.make(self.env_name)
+        agent = self.best_model
+        frames = []
+
+        for _ in range(episodes):
+            state = env.reset()
+            done = False
+            Strategy = GreedyStrategy()
+
+            for _ in range(max_steps):
+                frames.append(env.render(mode='rgb_array'))
+                action = Strategy.select_action(agent, state)
+                state, _, done, _ = env.step(action)
+
+                if done:
+                    break
+
+        env.close()
+
+        # Save frames as a GIF using imageio
+        try:
+            PIL_frames = [PIL.Image.fromarray(frame) for frame in frames]
+            PIL_frames[0].save(self.env_name + ".gif", format='GIF', append_images=PIL_frames[1:], save_all=True, duration=1000/30, loop=0)
+        except:
+            import imageio
+            frame_duration = 1000 // 30  # Calculate duration in milliseconds
+            # Use the duration argument instead of fps
+            imageio.mimsave(self.env_name + ".gif", frames, duration=frame_duration)
+            #imageio.mimsave(self.env_name, frames, fps=30)
+
+    def display_gif(self, filename: str = ".", episodes: int = 5, max_steps: int = 500):
+        self.create_gif(episodes, max_steps)
+        display(Image(filename=r"/content/" + self.env_name + ".gif", format='png'))
