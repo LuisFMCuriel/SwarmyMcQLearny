@@ -164,6 +164,7 @@ class DDQN:
 
             if evaluation_score > best_score:
                 self.best_model = self.online_model
+                best_score = evaluation_score
             elapsed_str = time.strftime("%H:%M:%S", time.gmtime(time.time() - training_start))
             mean_reward_10_episodes = np.mean(episode_reward[-10:])
             mean_reward_10_episodes_arr.append(mean_reward_10_episodes)
