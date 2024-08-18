@@ -243,10 +243,10 @@ class DDPG():
     def update_network(self, tau) -> None:
         # Update value network
         for target, online in zip(self.target_value_model.parameters(), self.online_value_model.parameters()):
-            target.data.copy_(tau*online.data + (1.0 - tau)*target.data)
+            target.data.copy_(tau*online.data + ((1.0 - tau)*target.data))
         # Update policy network
         for target, online in zip(self.target_policy_model.parameters(), self.online_policy_model.parameters()):
-            target.data.copy_(tau*online.data + (1.0 - tau)*target.data)
+            target.data.copy_(tau*online.data + ((1.0 - tau)*target.data))
     
     def optimize_model(self,
                        experiences,
