@@ -331,8 +331,12 @@ class DDPG():
             episode_timestep.append(0.0)
             for timestep, step in enumerate(count()):
                 # First the agent selects an action (the online model)
+
+                # This variable is to check if wether maximize exploration or not
+                enough_samples = self.replay_buffer.batch_size*n_warmup_batches
                 action = self.training_strategy_fn.select_action(self.online_policy_model, 
-                                                                 state)
+                                                                 state,
+                                                                 len(self.replay_buffer) < enough_samples)
                 # Print the take action
                 #print("Taking action: {}".format(action))
                 # Make the action and get the infor of the next state
