@@ -41,7 +41,6 @@ if __name__ == "__main__":
 
         my_DDPG = DDPG(
             gamma=args.gamma,
-            env_name=args.env_name,
             update_target_every_n_steps=args.update_target_every_n_steps,
             training_strategy_fn=NormalNoiseStrategy(bounds),
             evaluation_strategy_fn=GreedyStrategy(),
@@ -52,5 +51,7 @@ if __name__ == "__main__":
         )
         
 
-        _, _ = my_DDPG.train(max_episodes=args.max_episodes, hidden_dims = (256, 256))
+        _, _ = my_DDPG.train(max_episodes=args.max_episodes, 
+                             hidden_dims = (256, 256), 
+                             env_name=args.env_name)
         my_DDPG.display_gif(filename=r"./media/{}_pytorch.gif".format(args.env_name))
