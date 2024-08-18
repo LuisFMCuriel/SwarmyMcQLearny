@@ -10,6 +10,7 @@ import PIL
 import time
 import gym
 import torch.optim as optim
+import random
 
 
 class DDQN:
@@ -227,13 +228,11 @@ class DDPG():
                  evaluation_strategy_fn,
                  policy_opt_lr: float = 0.0003,
                  value_opt_lr: float = 0.0003,
-                 env_name: str = 'Pendulum-v1',
                  update_target_every_n_steps: int = 4,
                  replay_buffer_size = 100000,
                  replay_buffer_batch_size = 64):
         
         self.gamma = gamma
-        self.env_name = env_name
         self.update_target_every_n_steps = update_target_every_n_steps
         self.training_strategy_fn = training_strategy_fn
         self.evaluation_strategy_fn = evaluation_strategy_fn
@@ -284,10 +283,12 @@ class DDPG():
                    goal_mean = -150,
                    max_episodes = 1000,
                    tau = 1,
+                   seed = 12,
                    env_name = "Pendulum-v1"):
         
-        env = gym.make(self.env_name)
-
+        env = gym.make(env_name)
+        env.seed(seed)
+        torch.manual_seed(seed) ; np.random.seed(seed) ; random.seed(seed)
         nS, nA = env.observation_space.shape[0], env.action_space.shape[0]
         self.action_bounds = env.action_space.low, env.action_space.high
         
